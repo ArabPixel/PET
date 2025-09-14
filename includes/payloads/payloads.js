@@ -34,6 +34,7 @@ function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
     }
 		req.send();
 		req.onerror = function(){
+            alert('failed to connect to BinLoader server');
 			//alert("Cannot Load Payload Because The BinLoader Server Is Not Running");//<<If server is not running, alert message.
             //ServerStatus("Cannot Load Payload Because The BinLoader Server Is Not Running");
             Loadpayloadonline(PLfile);
@@ -140,7 +141,6 @@ export function load_DisableASLR(){
 }
 
 export function load_DisableUpdates(){
-    alert("its working");
     Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-disable-updates.bin");
 }
 
