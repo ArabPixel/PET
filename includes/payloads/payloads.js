@@ -36,7 +36,6 @@ function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
 		req.onerror = function(){
 			//alert("Cannot Load Payload Because The BinLoader Server Is Not Running");//<<If server is not running, alert message.
             //ServerStatus("Cannot Load Payload Because The BinLoader Server Is Not Running");
-            import('../../src/alert.mjs');
             Loadpayloadonline(PLfile);
 			return;
 		};
@@ -52,7 +51,6 @@ function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
                         }else{
                             //alert('Payload not sent !');
                             setTimeout(() => {
-                                import('../../src/alert.mjs');
                                 Loadpayloadonline(PLfile);
                             }, 3000); // 3 seconds delay
                             return;
@@ -74,7 +72,10 @@ function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
 // Load Payloads with exploit
 
 function Loadpayloadonline(PLfile) {
-    window.payload_path = PLfile;
+    if (PLfile == undefined){
+        sessionStorage.setItem('binloader', 1);
+    }else window.payload_path = PLfile;
+    import('../../src/alert.mjs');
 }
 
 // Payloads
@@ -86,44 +87,48 @@ export function HEN(){
 // Dumpers
 
 export function load_AppDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/appdumper.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-app-dumper.bin");
 }
 
 export function load_KernelDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/kerneldumper.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-kernel-dumper.bin");
 }
 
 export function load_VTXDumper(){
+    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
     Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-dumper-vtx-900.bin");
 }
 
 export function load_ModuleDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/moduledumper.bin");
-
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-module-dumper.bin");
 }
 
 
 // Tools
+
+export function load_BinLoader(){
+    Loadpayloadonline(undefined);
+}
 
 export function load_PS4Debug(){
     Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4debug.bin");
 }
 
 export function load_App2USB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/app2usb.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-app2usb.bin");
 }
 
 
 export function load_BackupDB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/backupdb.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-backup.bin");
 }
 
 export function load_RestoreDB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/exitidu.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-restore.bin");
 }
 
 export function load_DisableASLR(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/disableaslr.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-disable-aslr.bin");
 }
 
 export function load_DisableUpdates(){
@@ -131,35 +136,37 @@ export function load_DisableUpdates(){
 }
 
 export function load_EnableUpdates(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/enbaleupdates.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-enable-updates.bin");
 }
 
 export function load_ExitIDU(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/exitidu.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-exit-idu.bin");
 }
   
 export function load_FTP(){
-    Loadpayloadlocal(".includes/payloads//Bins/Tools/ftp.bin");
+    Loadpayloadlocal("./includes/payloads//Bins/Tools/ps4-ftp.bin");
 }
   
 export function load_HistoryBlocker(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/historyblocker.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-history-blocker.bin");
 }
   
 export function load_RIFRenamer(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/rifrenamer.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-rif-renamer.bin");
 }
   
 export function load_Orbis(){
+    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
     Loadpayloadlocal("./includes/payloads/Bins/Tools/Orbis-Toolbox-900.bin");
 }
 
 export function load_WebrRTE(){
+    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
     Loadpayloadlocal("./includes/payloads/Bins/Tools/WebRTE_900.bin");
 }
 
 export function load_ToDex(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ToDex.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-todex.bin");
 }
 
 export function load_ToDev(){
@@ -174,16 +181,20 @@ export function load_ToCex(){
     Loadpayloadlocal("./includes/payloads/Bins/Tools/ToCex.bin");
 }
 
-export function load_KernelClock(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/kernel-clock.bin");
-}
-
 export function load_PermanentUART(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/permanent-uart.bin");
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-permanent-uart.bin");
 }
 
 export function load_PUPDecrypt(){
     Loadpayloadlocal("./includes/payloads/Bins/Tools/pup-decrypt.bin");
+}
+
+export function load_FanThreshold(){
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-fan-threshold.bin");
+}
+
+export function load_EnableBrowser(){
+    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-enable-browser.bin");
 }
 
 // Linux

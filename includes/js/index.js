@@ -639,7 +639,7 @@ async function Loadpayloads(payload) {
         '../payloads/payloads.js'
       ]);
     }
-    alert("All modules are loaded!");
+    console.log("All modules are loaded!");
 
     const payloadModule = modules[0];
     if (payloadModule && typeof payloadModule[payload] === 'function') {
