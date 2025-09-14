@@ -23,48 +23,77 @@ var sendPayload = function(url, data, onLoadEndCallback) {
 //Load payloads with GoldHEN
 
 function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
-    var PS4IP = "127.0.0.1";
+    // read PS4 IP from sessionStorage (set via UI) or default to 127.0.0.1
+    var PS4IP = sessionStorage.getItem('ps4ip') || "127.0.0.1";
 
-	// First do an initial check to see if the BinLoader server is running, ready or busy.
-	var req = new XMLHttpRequest();
-    if (PS4IP == "127.0.0.1") {
-      req.open("POST", `http://${PS4IP}:9090/status`);
-    } else {
-      req.open("GET", `http://${PS4IP}:9090/status`);
-    }
-		req.send();
-		req.onerror = function(){
-            alert('failed to connect to BinLoader server');
-			//alert("Cannot Load Payload Because The BinLoader Server Is Not Running");//<<If server is not running, alert message.
-            //ServerStatus("Cannot Load Payload Because The BinLoader Server Is Not Running");
+    // First do an initial check to see if the BinLoader server is running, ready or busy.
+    var req = new XMLHttpRequest();
+    // use GET for status endpoint (more standard). If you rely on POST for local GoldHEN, change back.
+    req.open("GET", `http://${PS4IP}:9090/status`);
+    req.timeout = 3000; // ms
+
+    req.send();
+
+    req.onerror = function(){
+        console.error(`Failed to connect to BinLoader at ${PS4IP}:9090 (onerror)`);
+        alert('Failed to connect to BinLoader server — check PS4 IP, network and that BinLoader is running.');
+        Loadpayloadonline(PLfile);
+        return;
+    };
+
+    req.ontimeout = function(){
+        console.error(`Timeout connecting to BinLoader at ${PS4IP}:9090`);
+        alert('Timeout connecting to BinLoader server — it may be offline or unreachable.');
+        Loadpayloadonline(PLfile);
+        return;
+    };
+
+    req.onload = function(){
+        if (req.status < 200 || req.status >= 300) {
+            console.warn(`Status ${req.status} from BinLoader status endpoint`);
+            alert('Unexpected response from BinLoader server.');
             Loadpayloadonline(PLfile);
-			return;
-		};
-		req.onload = function(){
-			var responseJson = JSON.parse(req.responseText);
-			if (responseJson.status=="ready"){
-		    getPayload(PLfile, function (req) {
-				if ((req.status === 200 || req.status === 304) && req.response) {
-				    //Sending bins via IP POST Method
+            return;
+        }
+
+        var responseJson;
+        try {
+            responseJson = JSON.parse(req.responseText);
+        } catch (e) {
+            console.error('Invalid JSON from BinLoader status:', req.responseText);
+            alert('Invalid response from BinLoader server.');
+            Loadpayloadonline(PLfile);
+            return;
+        }
+
+        if (responseJson.status === "ready"){
+            getPayload(PLfile, function (req) {
+                if ((req.status === 200 || req.status === 304) && req.response) {
+                    // Sending bins via IP POST Method
                     sendPayload(`http://${PS4IP}:9090`, req.response, function (req) {
                         if (req.status === 200) {
-                            //alert("Payload sent !");
-                        }else{
-                            //alert('Payload not sent !');
+                            // success
+                        } else {
+                            console.warn('Payload not sent, server returned', req.status);
                             setTimeout(() => {
                                 Loadpayloadonline(PLfile);
-                            }, 3000); // 3 seconds delay
+                            }, 3000);
                             return;
                         }
-                    })
+                    });
+                } else {
+                    console.warn('Failed to fetch payload file:', req.status);
+                    setTimeout(() => {
+                        Loadpayloadonline(PLfile);
+                    }, 3000);
                 }
-			});
-			} else {
-				alert("Cannot Load Payload Because The BinLoader Server Is Busy");//<<If server is busy, alert message.
-				return;
-		  }
-	  };
-  }
+            });
+        } else {
+            alert("Cannot Load Payload Because The BinLoader Server Is Busy");
+            return;
+        }
+    };
+}
 
 //--------------------------------------------------
 
