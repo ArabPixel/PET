@@ -1,0 +1,3 @@
+src/kpatch/*.bin
+src/kpatch/*.elf
+src/kpatch/*.o
