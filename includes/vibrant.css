@@ -34,7 +34,7 @@ label {
 
 #ps-logo {
     /* This overrides the fill="#f72585" in your HTML */
-    fill: #3b82f6 !important;
+    fill: #f72585 !important;
 }
 
 /* Custom radio button styling for better compatibility */
@@ -51,7 +51,7 @@ input[type="radio"] {
 
 input[type="radio"]:checked {
     border: none;
-    background: #3B82F6;
+    background: #6d28d9;
 }
 
 
@@ -68,8 +68,7 @@ input[type="radio"]:checked {
 
 .fwSelected {
     border-radius: 5px;
-    /* border-bottom: 2px solid #2563eb; */
-    background-color: #2563eb;
+    background-color: #5b21b6;
     color: white;
 }
 
@@ -99,7 +98,7 @@ input[type="radio"]:checked {
 
 /* Thumb of the scrollbar */
 ::-webkit-scrollbar-thumb {
-    background: #2563eb;
+    background: #b45309;
     border-radius: 10px;
 }
 
@@ -107,7 +106,7 @@ input[type="radio"]:checked {
 .category-tools {
     background-color: rgba(34, 197, 94, 0.2);
     /* 20% green */
-    color: #4ade80;
+    color: #c4b5fd;
     /* bright green */
     border: none !important;
 }
@@ -115,14 +114,14 @@ input[type="radio"]:checked {
 .category-advanced {
     background-color: rgba(246, 92, 97, 0.2);
     /* 20% red */
-    color: #fa8b96;
+    color: #fca5a5;
     /* light red */
 }
 
 .category-linux {
     background-color: rgba(139, 92, 246, 0.2);
     /* 20% purple */
-    color: #a78bfa;
+    color: #fbbf24;
     /* light purple */
     border: none !important;
 }
@@ -152,11 +151,11 @@ html {
 }
 
 .bg-gray-800 {
-    background-color: #1f2937;
+    background-color: #231540;
 }
 
 .bg-gray-700 {
-    background-color: #374151;
+    background-color: #352050;
 }
 
 .bg-gray-700\/60 {
@@ -185,19 +184,19 @@ html {
 
 /* 20% opacity */
 .bg-blue-600 {
-    background-color: #2563eb;
+    background-color: #5b21b6;
 }
 
 .bg-red-600 {
-    background-color: #dc2626;
+    background-color: #b91c1c;
 }
 
 .bg-red-700 {
-    background-color: #901717;
+    background-color: #991b1b;
 }
 
 .bg-gray-50 {
-    background-color: #f9fafb;
+    background-color: #ede9fe;
 }
 
 /* Used in tabs, though often overridden */
@@ -233,12 +232,12 @@ html {
 
 /* 80% opacity */
 .text-gray-600 {
-    color: #4b5563;
+    color: #4a2e62;
 }
 
 /* For hover states */
 .text-blue-500 {
-    color: #3b82f6;
+    color: #7c3aed;
 }
 
 /* For active tabs/focus */
@@ -693,7 +692,7 @@ html {
 }
 
 .border-blue-500 {
-    border-color: #3b82f6;
+    border-color: #7c3aed;
 }
 
 .border-yellow-500\/50 {
@@ -709,7 +708,7 @@ html {
 }
 
 .border-gray-700 {
-    border-color: #374151;
+    border-color: #352050;
 }
 
 
@@ -879,7 +878,7 @@ section {
 
 /* Hover States */
 .hover\:bg-gray-700:hover {
-    background-color: #374151;
+    background-color: #352050;
 }
 
 .hover\:text-white:hover {
@@ -899,11 +898,11 @@ section {
 }
 
 .hover\:bg-blue-700:hover {
-    background-color: #1d4ed8;
+    background-color: #4c1d95;
 }
 
 .hover\:text-gray-600:hover {
-    color: #4b5563;
+    color: #4a2e62;
 }
 
 .hover\:border-gray-300:hover {
@@ -920,23 +919,23 @@ section {
 
 /* Focus States */
 .focus-within\:border-blue-500:focus-within {
-    border-color: #3b82f6;
+    border-color: #7c3aed;
 }
 
 .focus\:ring-2:focus {
-    box-shadow: 0 0 0 2px #60a5fa;
+    box-shadow: 0 0 0 2px #a78bfa;
 }
 
 /* Ring effect */
 .focus\:ring-blue-400:focus {
-    box-shadow: 0 0 0 2px #60a5fa;
+    box-shadow: 0 0 0 2px #a78bfa;
 }
 
 /* Ring color */
 
 /* Accent Color for Radio/Checkbox */
 .accent-blue-500 {
-    accent-color: #3b82f6;
+    accent-color: #7c3aed;
 }
 
 /* RTL Adjustments */
@@ -991,7 +990,7 @@ section {
     #exploit-status-panel, 
     #payloadsSection {
         /* Force each panel to take exactly 50% minus half of the total middle gap (16px total gap) */
-        /* width: calc(50% - 8px) !important; */
+        width: calc(50% - 8px) !important;
         flex: 0 0 calc(50% - 8px) !important;
         height: 100% !important;
     }
@@ -1011,7 +1010,7 @@ section {
 
 
 .tabs ul {
-    border-color: #374151;
+    border-color: #352050;
     /* Default border for the tab list */
     list-style: none;
 }
@@ -1025,13 +1024,13 @@ section {
 }
 
 .tabs button[aria-selected="true"] {
-    border-color: #3b82f6;
-    color: #3b82f6;
-    border-bottom: 1px solid #3b82f6;
+    border-color: #a78bfa;
+    color: #a78bfa;
+    border-bottom: 1px solid #a78bfa;
 }
 
 .tabs button:not([aria-selected="true"]):hover {
-    color: #4b5563;
+    color: #4a2e62;
     border-color: #d1d5db;
     /* Approximation for gray-300 */
 }

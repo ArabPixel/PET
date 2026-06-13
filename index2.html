@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS4 Exploit Host</title>
+    <link rel="stylesheet" href="index2.css">
+</head>
+<body>
+
+    <header class="system-console">
+        <div class="console-header">
+            <span class="status-indicator live"></span>
+            <span class="console-title">System Telemetry Logs</span>
+            <button id="toggle-settings-btn" class="toggle-settings-btn" onclick="toggleSettings()">⚙️ Host Settings</button>
+        </div>
+        <div id="log-box" class="console-log-box">
+            <div class="log-line success">[+] Exploit environment initialized successfully.</div>
+            <div class="log-line info">[*] Ready for user payload selection environment...</div>
+        </div>
+    </header>
+
+    <div class="main-app-layout">
+        
+        <main class="control-column">
+            
+            <div class="interaction-zone" id="interaction-zone">
+                
+                
+                <div class="circle-wrapper">
+    <button id="ps-btn" class="ps-circle">
+        <span class="ps-text">PS</span>
+    </button>
+    <span class="click-to-start">Click to Start</span>
+
+    <div class="hen-selector">
+        <div class="hen-pill-box">
+            <input type="radio" name="hen-ver" id="hen-gold" checked>
+            <label for="hen-gold">GoldHEN</label>
+            
+            <input type="radio" name="hen-ver" id="hen-mira">
+            <label for="hen-mira">Mira</label>
+            
+            <input type="radio" name="hen-ver" id="hen-vtx">
+            <label for="hen-vtx">vTX</label>
+        </div>
+    </div>
+</div>
+
+                <div class="settings-panel hidden" id="settings-panel">
+                    <div class="settings-inner-title">Host Configuration</div>
+                    
+                    <div class="config-group">
+                        <label class="config-label">Target Firmware</label>
+                        <div class="radio-pill-box">
+                            <input type="radio" name="fw-select" id="fw-11" checked>
+                            <label for="fw-11">11.00</label>
+                            
+                            <input type="radio" name="fw-select" id="fw-9">
+                            <label for="fw-9">9.00</label>
+                            
+                            <input type="radio" name="fw-select" id="fw-6">
+                            <label for="fw-6">6.72</label>
+                        </div>
+                    </div>
+
+                    <div class="config-group">
+                        <label class="config-label">Language</label>
+                        <div class="radio-pill-box">
+                            <input type="radio" name="lang-select" id="lang-en" checked>
+                            <label for="lang-en">EN</label>
+                            
+                            <input type="radio" name="lang-select" id="lang-ar">
+                            <label for="lang-ar">AR</label>
+                        </div>
+                    </div>
+
+                    <div class="config-group checkbox-row">
+                        <label class="config-label" for="setting-goldhen">Autoload GoldHEN</label>
+                        <input type="checkbox" id="setting-goldhen" checked>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="action-footer">
+                <button class="action-btn-primary">Web Activator</button>
+                <button class="action-btn-secondary">Clear Cache</button>
+            </div>
+            
+        </main>
+
+        <aside class="payload-column">
+            <h2 class="payload-panel-title">Available Payloads</h2>
+            <div class="payload-scroll-container">
+                
+                <div class="payload-card highlighted">
+                    <div class="payload-card-header">
+                        <span class="payload-name">GoldHEN (Recommended)</span>
+                        <span class="payload-version">v2.4b17</span>
+                    </div>
+                    <div class="payload-author">by SiSTR0</div>
+                    <p class="payload-desc">Homebrew Enabler featuring internal FTP server, complete plugin loader ecosystem, and cheat engine patches.</p>
+                </div>
+
+                <div class="payload-card">
+                    <div class="payload-card-header">
+                        <span class="payload-name">Linux Loader</span>
+                        <span class="payload-version">v24b</span>
+                    </div>
+                    <div class="payload-author">by ArabPixel</div>
+                    <p class="payload-desc">Unified architecture AIO Linux payload loader supporting structural multi-firmware environment offsets.</p>
+                </div>
+
+                <div class="payload-card">
+                    <div class="payload-card-header">
+                        <span class="payload-name">WebRTE</span>
+                        <span class="payload-version">v1.0</span>
+                    </div>
+                    <div class="payload-author">by PS4Trainer</div>
+                    <p class="payload-desc">Real-time memory editor patch application runtime engine framework.</p>
+                </div>
+                
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        function toggleSettings() {
+            const panel = document.getElementById('settings-panel');
+            const zone = document.getElementById('interaction-zone');
+            const toggleBtn = document.getElementById('toggle-settings-btn');
+            
+            panel.classList.toggle('hidden');
+            
+            if (panel.classList.contains('hidden')) {
+                zone.classList.remove('settings-active');
+                toggleBtn.innerText = "⚙️ Host Settings";
+            } else {
+                zone.classList.add('settings-active');
+                toggleBtn.innerText = "❌ Close Panel";
+            }
+        }
+    </script>
+</body>
+</html>

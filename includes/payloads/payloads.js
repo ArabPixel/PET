@@ -1,69 +1,84 @@
 //------BIG THANKS TO SISTRO FOR THIS !!!!!--------
+// @ts-nocheck
+var needsGoldHEN = false;   // check if the payload requires GoldHEN's PayLoader because of .elf format
 
-var getPayload = function(payload, onLoadEndCallback) {
-  var req = new XMLHttpRequest();
-  req.open('GET', payload);
-  req.send();
-  req.responseType = "arraybuffer";
-  req.onload = function (event) {
-      if (onLoadEndCallback) onLoadEndCallback(req, event);
-  };
+var getPayload = function (payload, onLoadEndCallback) {
+    var req = new XMLHttpRequest();
+    req.open('GET', payload);
+    req.responseType = "arraybuffer";
+    req.send();
+    req.onload = function (event) {
+        if (onLoadEndCallback) onLoadEndCallback(req, event);
+    };
 }
 
-var sendPayload = function(url, data, onLoadEndCallback) {
-  var req = new XMLHttpRequest();
-  req.open("POST", url, true);
-  req.send(data);
+var sendPayload = function (url, data, onLoadEndCallback) {
+    var req = new XMLHttpRequest();
+    req.open("POST", url, true);
+    req.send(data);
 
-  req.onload = function (event) {
-      if (onLoadEndCallback) onLoadEndCallback(req, event);
-  };
+    req.onload = function (event) {
+        if (onLoadEndCallback) onLoadEndCallback(req, event);
+    };
 }
 
 //Load payloads with GoldHEN
 
-function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
-    var PS4IP = "127.0.0.1";
-
-	// First do an initial check to see if the BinLoader server is running, ready or busy.
-	var req = new XMLHttpRequest();
+function Loadpayloadlocal(PLfile, name) { //Loading Payload via Payload Param.
+    var PS4IP = user.ip;
+    // First do an initial check to see if the PayLoader server is running, ready or busy.
+    var req = new XMLHttpRequest();
+    var port = 9090;
     if (PS4IP == "127.0.0.1") {
-      req.open("POST", `http://${PS4IP}:9090/status`);
+        req.open("POST", "http://" + PS4IP + ":" + port + "/status");
     } else {
-      req.open("GET", `http://${PS4IP}:9090/status`);
+        req.open("GET", "http://" + PS4IP + ":" + port + "/status");
     }
-		req.send();
-		req.onerror = function(){
-			//alert("Cannot Load Payload Because The BinLoader Server Is Not Running");//<<If server is not running, alert message.
-            //ServerStatus("Cannot Load Payload Because The BinLoader Server Is Not Running");
-            Loadpayloadonline(PLfile);
-			return;
-		};
-		req.onload = function(){
-			var responseJson = JSON.parse(req.responseText);
-			if (responseJson.status=="ready"){
-		    getPayload(PLfile, function (req) {
-				if ((req.status === 200 || req.status === 304) && req.response) {
-				    //Sending bins via IP POST Method
-                    sendPayload(`http://${PS4IP}:9090`, req.response, function (req) {
+    req.send();
+    req.onerror = function () {
+        // If its elfldr, change to .bin 
+        if (name == "ElfLoader") PLfile = "./includes/payloads/Bins/elfldr.bin";
+
+        if (user.ps4Fw >= 6.70 && user.ps4Fw <= 9.60 && user.platform == "PS4") {
+            if (!isHttps()) {
+                if (confirm(window.lang.disabledBinloader)) {
+                    Loadpayloadonline(PLfile);
+                }
+            } else Loadpayloadonline(PLfile);
+        } else {
+            alert(window.lang.binLoaderNotDetected);
+            return;
+        }
+
+        return;
+    };
+    req.onload = function () {
+        var responseJson = JSON.parse(req.responseText);
+        if (responseJson.status == "ready") {
+            getPayload(PLfile, function (req) {
+                if ((req.status === 200 || req.status === 304) && req.response) {
+                    //Sending bins via IP POST Method
+                    sendPayload("http://" + PS4IP + ":" + port, req.response, function (req) {
                         if (req.status === 200) {
-                            //alert("Payload sent !");
-                        }else{
-                            //alert('Payload not sent !');
-                            setTimeout(() => {
+                            var msg = window.lang.payloadSentToPayLoader.replace("{payload}", name) + user.ip;
+                            log(msg);
+                        } else {
+                            var msg = window.lang.failedToSendToPayLoader.replace("{payload}", name) + user.ip;
+                            log(msg, "red");
+                            setTimeout(function () {
                                 Loadpayloadonline(PLfile);
                             }, 3000); // 3 seconds delay
                             return;
                         }
                     })
                 }
-			});
-			} else {
-				alert("Cannot Load Payload Because The BinLoader Server Is Busy");//<<If server is busy, alert message.
-				return;
-		  }
-	  };
-  }
+            });
+        } else {
+            alert(window.lang.busyBinLoader);//<<If server is busy, alert message.
+            return;
+        }
+    };
+}
 
 //--------------------------------------------------
 
@@ -72,214 +87,161 @@ function Loadpayloadlocal(PLfile){ //Loading Payload via Payload Param.
 // Load Payloads with exploit
 
 function Loadpayloadonline(PLfile) {
-    if (PLfile == undefined){
+    if (PLfile == undefined) {
+        // run BinLoader
         sessionStorage.setItem('binloader', 1);
-    }else window.payload_path = PLfile;
-    import('../../src/alert.mjs');
+
+        // Check if Linux payload is selected
+    } else if (needsGoldHEN) {
+        alert(window.lang.payloadOnlyWithGoldHEN);
+        needsGoldHEN = false;
+        return;
+
+    } else {
+        sessionStorage.setItem('payload_path', PLfile);
+    }
+
+    // Jailbreak
+    if (user.platform == "PS4") jailbreak();
 }
 
 // Payloads
 
-export function HEN(){
+function HEN() {
     Loadpayloadlocal("./includes/payloads/HEN/HEN.bin");
 }
 
 // Dumpers
 
-export function load_AppDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-app-dumper.bin");
+function load_AppDumper(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-app-dumper.bin", name);
 }
 
-export function load_KernelDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-kernel-dumper.bin");
+function load_KernelDumper(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-kernel-dumper.bin", name);
 }
 
-export function load_VTXDumper(){
-    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-dumper-vtx-900.bin");
-}
 
-export function load_ModuleDumper(){
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-module-dumper.bin");
+function load_ModuleDumper(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-module-dumper.bin", name);
 }
-
 
 // Tools
 
-export function load_BinLoader(){
-    Loadpayloadonline(undefined);
+function load_BinLoader(name) {
+    if (user.ps4Fw >= 7.00 && user.ps4Fw <= 9.60) {
+        Loadpayloadonline(undefined);
+    } else alert(window.lang.unsupportedFirmware + user.ps4Fw);
 }
 
-export function load_PS4Debug(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4debug.bin");
+function load_Elfldr(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/elfldr.elf", name)
 }
 
-export function load_App2USB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-app2usb.bin");
+function load_PS4Debug(name) {
+    if (user.ps4Fw <= 12.02) {
+        Loadpayloadlocal("./includes/payloads/Bins/ps4debug.bin", name);
+    } else alert(window.lang.unsupportedFirmware + user.ps4Fw);
+}
+
+function load_App2USB(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-app2usb.bin", name);
 }
 
 
-export function load_BackupDB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-backup.bin");
+function load_BackupDB(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-backup.bin", name);
 }
 
-export function load_RestoreDB(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-restore.bin");
+function load_RestoreDB(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-restore.bin", name);
 }
 
-export function load_DisableASLR(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-disable-aslr.bin");
+function load_DisableASLR(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-disable-aslr.bin", name);
 }
 
-export function load_DisableUpdates(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-disable-updates.bin");
+function load_DisableUpdates(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-disable-updates.bin", name);
 }
 
-export function load_EnableUpdates(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-enable-updates.bin");
+function load_EnableUpdates(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-enable-updates.bin", name);
 }
 
-export function load_ExitIDU(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-exit-idu.bin");
-}
-  
-export function load_FTP(){
-    Loadpayloadlocal("./includes/payloads//Bins/Tools/ps4-ftp.bin");
-}
-  
-export function load_HistoryBlocker(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-history-blocker.bin");
-}
-  
-export function load_RIFRenamer(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-rif-renamer.bin");
-}
-  
-export function load_Orbis(){
-    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/Orbis-Toolbox-900.bin");
+function load_ExitIDU(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-exit-idu.bin", name);
 }
 
-export function load_WebrRTE(){
-    if (ps4fw != 9.00) return alert(`Unsupported firmware ${ps4fw}`);
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/WebRTE_900.bin");
+function load_FTP(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-ftp.bin", name);
 }
 
-export function load_ToDex(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-todex.bin");
+function load_HistoryBlocker(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-history-blocker.bin", name);
 }
 
-export function load_ToDev(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ToDev.bin");
+function load_RIFRenamer(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-rif-renamer.bin", name);
 }
 
-export function load_ToKratos(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ToKratos.bin");
+function load_Orbis(name) {
+    if (user.ps4Fw != 5.05 && user.ps4Fw != 6.72 && user.ps4Fw != 7.02 && user.ps4Fw != 7.55 && user.ps4Fw != 9.00) {
+        alert(window.lang.unsupportedFirmware + user.ps4Fw);
+    } else Loadpayloadlocal("./includes/payloads/Bins/Orbis-Toolbox-900.bin", name);
 }
 
-export function load_ToCex(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ToCex.bin");
+function load_WebRTE(name) {
+    if (user.ps4Fw != 5.05 && user.ps4Fw != 6.72 && (user.ps4Fw < 7.00 || user.ps4Fw > 11.00)) {
+        //  5.05, 6.72 And 7.00 - 11.00
+        alert(window.lang.unsupportedFirmware + user.ps4Fw);
+    } else Loadpayloadlocal("./includes/payloads/Bins/WebRTE.bin", name);
 }
 
-export function load_PermanentUART(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-permanent-uart.bin");
+function load_PermanentUART(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-permanent-uart.bin", name);
 }
 
-export function load_PUPDecrypt(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/pup-decrypt.bin");
+function load_PUPDecrypt(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-pup-decrypt.bin", name);
 }
 
-export function load_FanThreshold(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-fan-threshold.bin");
-}
-
-export function load_EnableBrowser(){
-    Loadpayloadlocal("./includes/payloads/Bins/Tools/ps4-enable-browser.bin");
+function load_FanThreshold(name) {
+    var temp = sessionStorage.getItem('fanTemp');
+    Loadpayloadlocal("./includes/payloads/Bins/fan-thresholds/ps4-fan-threshold" + temp + ".bin", name);
 }
 
 // Linux
+function load_Linux(name, payloadId) {
+    var sliceIndex = name.indexOf('MB');
+    var size;
+    // name contains MB? slice it to grab the size, otherwise from payloadId
+    if (sliceIndex !== -1) {
+        sliceIndex = -6;
+        size = name.slice(sliceIndex).replace(" ", "-").toLowerCase();
+    } else {
+        sliceIndex = -7;
+        size = payloadId.slice(sliceIndex).replace("x", "-").toLowerCase();
+    }
 
-export function load_Linux(){
-    Loadpayloadlocal("./includes/payloads/Bins/Linux/LinuxLoader-900.bin");
+    Loadpayloadlocal("./includes/payloads/Linux/linux" + size + ".elf", name);
+    needsGoldHEN = true;
 }
 
-export function load_Linux2gb(){
-    Loadpayloadlocal("./includes/payloads/Bins/Linux/LinuxLoader-900-2gb.bin");
+function load_npFakeSignin(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/np-fake-signin-ps4.elf", name);
 }
 
-export function load_Linux3gb(){
-    Loadpayloadlocal("./includes/payloads/Bins/Linux/LinuxLoader-900-3gb.bin");
+function load_WebSrv(name) {
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-websrv.bin", name);
 }
 
-export function load_Linux4gb(){
-    Loadpayloadlocal("./includes/payloads/Bins/Linux/LinuxLoader-900-4gb.bin");
-}
-
-export function load_Linux5gb(){
-    Loadpayloadlocal("./includes/payloads/Bins/Linux/LinuxLoader-900-5gb.bin");
-}
-
-
-// Mod Menu
-
-// GTA
-
-export function load_GTAArbic127(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/ArabicGuy-1.0-1.27-rfoodxmodz.bin");
-}
-
-export function load_GTAArbic132(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/ArabicGuy-1.0-1.32-rfoodxmodz.bin");
-}
-
-export function load_GTAArbic133(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/ArabicGuy-1.0-1.33-rfoodxmodz.bin");
-}
-
-
-export function load_GTABQ133(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/BeefQueefMod-1.33.bin");
-}
-
-export function load_GTABQ134(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/BeefQueefMod-1.34.bin");
-}
-
-export function load_GTABQ138(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/BeefQueefMod-1.38.bin");
-}
-
-export function load_GTAWM132(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/WildeModz-1.32.bin");
-}
-
-export function load_GTAWM134(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/WildeModz-1.34.bin");
-}
-
-export function load_GTAWM138(){
-    Loadpayloadlocal("./includes/payloads/Bins/GTA/WildeModz-1.38.bin");
-}
-
-// RDR2
-
-export function load_Oysters100(){
-    Loadpayloadlocal("./includes/payloads/Bins/RDR2/OystersMenu-1.00-FREE.bin");
-}
-
-
-export function load_Oysters113(){
-    Loadpayloadlocal("./includes/payloads/Bins/RDR2/OystersMenu-1.13-FREE.bin");
-}
-
-export function load_Oysters119(){
-    Loadpayloadlocal("./includes/payloads/Bins/RDR2/OystersMenu-1.19-FREE.bin");
-}
-
-export function load_Oysters124(){
-    Loadpayloadlocal("./includes/payloads/Bins/RDR2/OystersMenu-1.24-FREE.bin");
-}
-
-export function load_Oysters129(){
-    Loadpayloadlocal("./includes/payloads/Bins/RDR2/OystersMenu-1.29-FREE.bin");
+// Custom uploaded Payload
+function custom(payloadFile) {
+    if (!payloadFile) {
+        alert("Empty file");
+        return;
+    }
+    Loadpayloadlocal(URL.createObjectURL(payloadFile), payloadFile.name);
+    log(window.lang.customPayloadLoaded + payloadFile.name);
 }
