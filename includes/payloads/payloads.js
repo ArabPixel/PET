@@ -39,7 +39,7 @@ function Loadpayloadlocal(PLfile, name) { //Loading Payload via Payload Param.
         // If its elfldr, change to .bin 
         if (name == "ElfLoader") PLfile = "./includes/payloads/Bins/elfldr.bin";
 
-        if (user.ps4Fw >= 6.70 && user.ps4Fw <= 9.60 && user.platform == "PS4") {
+        if (user.ps4Fw >= webKitMin && user.ps4Fw <= webKitMax && user.platform == "PS4") {
             if (!isHttps()) {
                 if (confirm(window.lang.disabledBinloader)) {
                     Loadpayloadonline(PLfile);
@@ -90,7 +90,10 @@ function Loadpayloadonline(PLfile) {
     if (PLfile == undefined) {
         // run BinLoader
         sessionStorage.setItem('binloader', 1);
-
+        if (user.exploitChain == 2 || user.exploitChain == 3 || user.exploitChain == 4){
+            PLfile = "./includes/payloads/Bins/elfldr.bin";
+            sessionStorage.setItem("payload_path", PLfile);
+        }
         // Check if Linux payload is selected
     } else if (needsGoldHEN) {
         alert(window.lang.payloadOnlyWithGoldHEN);
@@ -106,24 +109,20 @@ function Loadpayloadonline(PLfile) {
 }
 
 // Payloads
-
-function HEN() {
-    Loadpayloadlocal("./includes/payloads/HEN/HEN.bin");
-}
-
+// -----------------
 // Dumpers
 
 function load_AppDumper(name) {
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-app-dumper.bin", name);
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-app-dumper.bin", name);
 }
 
 function load_KernelDumper(name) {
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-kernel-dumper.bin", name);
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-kernel-dumper.bin", name);
 }
 
 
 function load_ModuleDumper(name) {
-    Loadpayloadlocal("./includes/payloads/Bins/Dumper/ps4-module-dumper.bin", name);
+    Loadpayloadlocal("./includes/payloads/Bins/ps4-module-dumper.bin", name);
 }
 
 // Tools

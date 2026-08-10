@@ -5,12 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     <title>PSFree Enhanced</title>
+    <meta name="description" content="A user-friendly, feature-rich PS4 exploit host for 6.xx - 11.02." />
+    <meta name="author" content="ArabPixel">
+    <meta name="keywords" content="PS4, PlayStation 4, webkit exploit, jailbreak, psfree lapse">
     <link rel="stylesheet" id="main-stylesheet" href="">
+    <link rel="stylesheet" id="color-stylesheet" href="">
     <script>
         // Prevent "Theme Flash" by applying the href before the body renders
         var savedTheme = localStorage.getItem('theme') || "index";
+        var savedColor = localStorage.getItem('color') || "default";
         if (savedTheme) {
-            document.getElementById('main-stylesheet').setAttribute('href', './includes/' + savedTheme + '.css');
+            document.getElementById('main-stylesheet').setAttribute('href', './includes/css/layouts/' + savedTheme + '.css');
+        }
+        if (savedColor) {
+            document.getElementById('color-stylesheet').setAttribute('href', './includes/css/colors/' + savedColor + '.css');
         }
     </script>
 </head>
@@ -44,7 +52,7 @@
             </header>
 
             <!-- PS Button -->
-            <button>
+            <button id="pslogo">
                 <div id="ps-logo-container"
                     class="relative group cursor-pointer flex flex-col items-center justify-center p-8 rounded-full bg-white/5 hover:bg-white/10 transition-all duration-300 transform hover:scale-102">
                     <svg id="ps-logo" class="w-32 h-32 transition-all duration-500 ease-in-out" viewBox="0 0 32 32"
@@ -104,7 +112,7 @@
 
         <!-- Exploit section -->
         <section id="exploit-main-screen" class="flex w-full bg-gray-900 text-white transition-opacity duration-700">
-            <div id="exploitContainer" class="grid md:grid-cols-2 h-screen">
+            <div id="exploitContainer" class="grid md:grid-cols-2">
                 <!-- Exploit console panel -->
                 <div id="exploit-status-panel" class="gap-4 bg-gray-800 p-6 rounded-lg flex flex-col h-full w-full">
                     <div class="flex justify-between w-auto" style="align-items: baseline;">
@@ -120,27 +128,28 @@
                         dir="ltr">
                         <pre id='console'><center>--</center></pre>
                     </div>
-                    <div id="warningBox" class="bg-yellow-600/20 border border-yellow-500/50 rounded-lg p-4 ">
-                        <div class="flex items-start space-x-3 rtl:space-x-reverse">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                fill="none" stroke="gold" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="feather feather-alert-triangle">
+                    <!-- HEN Selector -->
+                    <div id="henSelection" class="flex items-center justify-center gap-4">
+                        <label
+                            class="flex items-center px-2 py-1 rounded bg-gray-700/60 hover:bg-gray-700 cursor-pointer shadow border-2 border-transparent focus-within:border-blue-500">
+                            <input type="radio" name="hen2" value="GoldHEN" class="accent-blue-500 w-4 h-4 ml-2"
+                                onchange="saveJbFlavor(this.name, this.value)">
+                            <span class="text-base font-semibold text-white/90 select-none">GoldHEN</span>
+                        </label>
+                        <label
+                            class="flex items-center px-2 py-1 rounded bg-gray-700/60 hover:bg-gray-700 cursor-pointer shadow border-2 border-transparent focus-within:border-blue-500">
+                            <input type="radio" name="hen2" value="HEN" class="accent-blue-500 w-4 h-4 ml-2"
+                                onchange="saveJbFlavor(this.name, this.value)">
+                            <span class="text-base font-semibold text-white/90 select-none">HEN</span>
+                        </label>
+                        <button id="exploitRun"
+                            class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                                class="bi bi-play" viewBox="0 0 16 16">
                                 <path
-                                    d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
-                                </path>
-                                <line x1="12" y1="9" x2="12" y2="13"></line>
-                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
                             </svg>
-                            <div class="text-sm text-yellow-200">
-                                <p class="font-medium mb-1">Important notice:</p>
-                                <ul class="space-y-1 text-yellow-200/80">
-                                    <li>Make sure to close all apps before running the exploit</li>
-                                    <li>Make sure to delete cache data before running the exploit for the first time
-                                    </li>
-                                    <li>It might take you more than one time</li>
-                                </ul>
-                            </div>
-                        </div>
+                        </button>
                     </div>
                 </div>
 
@@ -181,6 +190,14 @@
                             <select style="background: transparent;" id="ps4FwSelect"
                                 class="hidden p-1 text-center rounded font-semibold transition-colors text-white">
                                 <option selected hidden>PS4 FW</option>
+                                <option value="lower">Lower</option>
+                                <option value="6.00">6.00</option>
+                                <option value="6.02">6.02</option>
+                                <option value="6.20">6.20</option>
+                                <option value="6.50">6.50</option>
+                                <option value="6.51">6.51</option>
+                                <option value="6.70">6.70</option>
+                                <option value="6.71">6.71</option>
                                 <option value="6.72">6.72</option>
                                 <option value="7.00">7.00</option>
                                 <option value="7.01">7.01</option>
@@ -216,11 +233,11 @@
                                 <option value="13.02">13.02</option>
                                 <option value="13.04">13.04</option>
                                 <option value="13.50">13.50</option>
+                                <option value="13.52">13.52</option>
                             </select>
                         </div>
                     </div>
-                    <div
-                        class="mb-4 border-b border-gray-200 border-gray-700 w-full sticky top-0 bg-gray-800 z-10 tabs">
+                    <div class="border-b border-gray-200 border-gray-700 w-full sticky top-0 bg-gray-800 z-10 tabs">
                         <ul class="flex flex-wrap -mb-px text-sm font-medium text-center w-full" id="default-tab"
                             data-tabs-toggle="#default-tab-content" role="tablist">
                             <li class="flex-1" role="presentation">
@@ -281,28 +298,6 @@
                             </div>
                         </div>
                     </div>
-                    <div id="henSelection" class="flex items-center justify-center gap-4 mb-4">
-                        <label
-                            class="flex items-center px-2 py-1 rounded bg-gray-700/60 hover:bg-gray-700 cursor-pointer shadow border-2 border-transparent focus-within:border-blue-500">
-                            <input type="radio" name="hen2" value="GoldHEN" class="accent-blue-500 w-4 h-4 ml-2"
-                                onchange="saveJbFlavor(this.name, this.value)">
-                            <span class="text-base font-semibold text-white/90 select-none">GoldHEN</span>
-                        </label>
-                        <label
-                            class="flex items-center px-2 py-1 rounded bg-gray-700/60 hover:bg-gray-700 cursor-pointer shadow border-2 border-transparent focus-within:border-blue-500">
-                            <input type="radio" name="hen2" value="HEN" class="accent-blue-500 w-4 h-4 ml-2"
-                                onchange="saveJbFlavor(this.name, this.value)">
-                            <span class="text-base font-semibold text-white/90 select-none">HEN</span>
-                        </label>
-                        <button id="exploitRun"
-                            class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                                class="bi bi-play" viewBox="0 0 16 16">
-                                <path
-                                    d="M10.804 8 5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" />
-                            </svg>
-                        </button>
-                    </div>
                     <a hidden
                         class="secondHostBtn w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold disabled:opacity-50 transition-colors text-white text-center"
                         href="http://psfree-enhanced.free.nf" style="text-decoration: none;">
@@ -320,41 +315,43 @@
     <div class="fixed inset-0 bg-black/50 z-50 flex backdrop-blur-sm items-center justify-center p-4 hidden"
         id="about-popup-overlay">
         <div id="about-popup" class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4">About PSFree</h2>
+            <h2 class="text-2xl font-bold">About PSFree Enhanced</h2>
             <div class="space-y-2 text-white/80">
-                <p>Version: 1.5.1</p>
+                <p>Version: 2.0</p>
                 <p>A web interface to jailbreak your PS4 using PSFree chained with Lapse kernel exploit</p>
             </div>
-            <p id="infoProtip" class="mt-2">ProTip: New functions become available if hosted locally or on a PS4 using
-                the PS4-Websrv payload.</p>
-            <div id="PS4FWOK" class="mt-6">
+            <div id="PS4FWOK" class="mt-4">
                 <h3 class="text-l font-bold mb-4">Supported PS4 firmware</h3>
                 <div id="listfw" class="grid-cols-4 text-sm text-white/70 mb-4">
-                    <p id="fw670">6.70</p>
-                    <p id="fw671">6.71</p>
-                    <p id="fw672">6.72</p>
-                    <p id="fw700">7.00</p>
-                    <p id="fw701">7.01</p>
-                    <p id="fw702">7.02</p>
-                    <p id="fw750">7.50</p>
-                    <p id="fw751">7.51</p>
-                    <p id="fw755">7.55</p>
-                    <p id="fw800">8.00</p>
-                    <p id="fw801">8.01</p>
-                    <p id="fw803">8.03</p>
-                    <p id="fw850">8.50</p>
-                    <p id="fw852">8.52</p>
-                    <p id="fw900">9.00</p>
-                    <p id="fw903">9.03</p>
-                    <p id="fw904">9.04</p>
-                    <p id="fw950">9.50</p>
-                    <p id="fw951">9.51</p>
-                    <p id="fw960">9.60</p>
+                    <p id="fw6">6.xx</p>
+                    <p id="fw7">7.xx</p>
+                    <p id="fw8">8.xx</p>
+                    <p id="fw9">9.xx</p>
+                    <p id="fw10">10.xx</p>
+                    <p id="fw110">11.0x</p>
                 </div>
             </div>
             <small id="goldhenFirmwareSemiSupported">
                 <i class="text-white/70">* Loading payloads through GoldHEN's PayLoader is supported.</i>
             </small>
+            <h3 class="text-l font-bold mt-4 mb-2">Credits</h3>
+            <div class="flex flex-wrap justify-evenly text-sm text-white/70 mb-2">
+                <p>abc</p>
+                <p>sleirsgoevy</p>
+                <p>Fire30</p>
+                <p>ntfargo</p>
+            </div>
+            <div class="flex flex-wrap justify-evenly text-sm text-white/70 mt-2">
+                <p>Al Azif</p>
+                <p>ufm42</p>
+                <p>Feyzee61</p>
+                <p>ArabPixel</p>
+            </div>
+            <div class="flex flex-wrap justify-evenly text-sm text-white/70 mt-2">
+                <p>Dr.Yenyen</p>
+                <p>Teligin174</p>
+            </div>
+
             <button onclick="aboutPopup()"
                 class="mt-6 w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-semibold transition-colors"
                 id="close-about">Close</button>
@@ -448,29 +445,53 @@
                     </details>
                 </div>
             </div>
-            <div id="chooseTheme" class="mb-4">
-                <h3 class="text-lg font-semibold mb-2" id="theme">Choose Theme</h3>
-                <div class="radio-group space-y-2 flex flex-wrap">
+            <div id="chooseTheme" class="mb-4 flex">
+                <h3 class="text-lg font-semibold mb-2" id="theme">Choose Layout</h3>
+                <div class="radio-group space-y-2 flex flex-wrap flex-row" id="layouts">
                     <label class="flex items-center text-white/80">
                         <input type="radio" name="theme" value="index" onchange="setTheme(this.value);">
                         <p id="defaultTheme">Default</p>
                     </label>
                     <label class="flex items-center text-white/80">
-                        <input type="radio" name="theme" value="vibrant" onchange="setTheme(this.value);">
-                        <p id="vibrantTheme">Vibrant</p>
+                        <input type="radio" name="theme" value="compact" onchange="setTheme(this.value);">
+                        <p id="compactTheme">Compact</p>
+                    </label>
+                </div>
+                <!-- Color  -->
+                <h3 class="text-lg font-semibold mb-2" id="colorWord">Color</h3>
+                <div class="radio-group space-y-2 flex flex-wrap" id="colors">
+                    <label class="flex items-center text-white/80">
+                        <input type="radio" name="colorTheme" value="default" onchange="setColors(this.value);">
+                        <p id="defaultColor">Default</p>
+                    </label>
+                    <label class="flex items-center text-white/80">
+                        <input type="radio" name="colorTheme" value="vibrant" onchange="setColors(this.value);">
+                        <p id="vibrantColor">Vibrant</p>
                     </label>
                 </div>
             </div>
             <div id="chooseExploitChain" class="mb-4">
                 <h3 class="text-lg font-semibold mb-2" id="exploitChainTitle">Exploit Chain</h3>
                 <div class="radio-group space-y-2 flex flex-wrap">
-                    <label class="flex items-center text-white/80">
-                        <input type="radio" name="exploitChain" value="false" onchange="secondLapse(this.value);">
-                        <p id="defaultLapse">Default's PSFree Lapse</p>
+                    <label class="flex items-center text-white/80" id="modularLapseExp">
+                        <input type="radio" name="exploitChain" value="0" onchange="exploitChain(this.value);">
+                        <p id="modularLapse">PSFree Lapse Modular</p>
                     </label>
-                    <label class="flex items-center text-white/80">
-                        <input type="radio" name="exploitChain" value="true" onchange="secondLapse(this.value);">
-                        <p id="secondLapse">Feyzee61's PSFree Lapse</p>
+                    <label class="flex items-center text-white/80" id="bundleLapseExp">
+                        <input type="radio" name="exploitChain" value="1" onchange="exploitChain(this.value);">
+                        <p id="bundleLapse">PSFree Lapse Bundle</p>
+                    </label>
+                    <label class="flex items-center text-white/80" id="badHoistExp">
+                        <input type="radio" name="exploitChain" value="2" onchange="exploitChain(this.value);">
+                        <p id="badHoist">BadHoist</p>
+                    </label>
+                    <label class="flex items-center text-white/80" id="cssFontFaceNetCtrlExp">
+                        <input type="radio" name="exploitChain" value="3" onchange="exploitChain(this.value);">
+                        <p id="cssFontFaceNetCtrl">CSSFontFace NetCtrl</p>
+                    </label>
+                    <label class="flex items-center text-white/80" id="cssFontFaceLapseExp">
+                        <input type="radio" name="exploitChain" value="4" onchange="exploitChain(this.value);">
+                        <p id="cssFontFaceLapse">CSSFontFace Lapse</p>
                     </label>
                 </div>
             </div>
@@ -540,50 +561,53 @@
     </div>
 
     <script>
-        window.addEventListener('error', function (event) {
-            var reason = event.error;
-            var msg = 'Unhandled error\n';
-            if (reason) {
-                msg += reason + '\n';
-                if (reason.sourceURL)
-                    msg += reason.sourceURL;
-                if (reason.line)
-                    msg += ':' + reason.line;
-                if (reason.column)
-                    msg += ':' + reason.column;
-                if (reason.stack)
-                    msg += '\n' + reason.stack;
-            } else {
-                msg += 'No error object';
-            }
-            alert(msg);
+        // Global Error Tracker
+        window.onerror = function (msg, url, lineno, colno, error) {
+            const stack = error.stack || 'No stack trace';
+            console.error('[onerror]', { msg, url, lineno, colno, stack });
+            alert(`Error: ${msg}\nURL: ${url}\nLine: ${lineno}, Col: ${colno}\n\nOpen an issue on github or contact me on discord '@arabpixel'`);
+            return true;
+        };
+
+        // Catch unhandled promise rejections
+        window.addEventListener('unhandledrejection', function (event) {
+            const reason = event.reason;
+            const msg = reason instanceof Error
+                ? `${reason.message}\n\nStack:\n${reason.stack}`
+                : String(reason);
+            console.error('[unhandledrejection]', reason);
+            alert(`Unhandled Promise Rejection:\n${msg}\n\nOpen an issue on github or contact me on discord '@arabpixel'`);
         });
 
-        // Automatically load the 6.72 entrypoint
-        // Taken from Feyzee61's ps4jb
-        window.addEventListener('load', function () {
-            var ua = navigator.userAgent;
-            var isPS4 = ua.indexOf("PlayStation 4") !== -1;
-            var is67x = ((ua.indexOf(" 6.70") !== -1) || (ua.indexOf(" 6.71") !== -1) || (ua.indexOf(" 6.72") !== -1));
-            var localLog = document.getElementById('console');
-            if (isPS4 && is67x && localStorage.getItem('bareboneJB') !== 'true') {
-                window.entrypoint672_result = 0;
-                window.exploitsetup672_result = 0;
 
-                try {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', 'includes/js/exploits/672entrypoint.js', false);
-                    xhr.send('');
-                    if (xhr.status === 200) {
-                        eval.call(top.window, xhr.responseText);
-                    }
-                } catch (e) {
-                    localLog.innerText += "Early entrypoint hook failed: " + e;
+
+        var ua = navigator.userAgent;
+        var isPS4 = ua.indexOf("PlayStation 4") !== -1;
+        var is67x = ((ua.indexOf(" 6.70") !== -1) || (ua.indexOf(" 6.71") !== -1) || (ua.indexOf(" 6.72") !== -1));
+        window.entrypoint672_result = 0;
+        window.exploitsetup672_result = 0;
+
+        var jailbreakNow = sessionStorage.getItem("jailbreakNow") != null;
+        // Load 6.7x entrypoint if needed conditionally
+        if (isPS4 && is67x && jailbreakNow) {
+            try {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', 'src/badhoist/672entrypoint.js', false);
+                xhr.send('');
+                if (xhr.status === 200) {
+                    eval.call(top.window, xhr.responseText);
                 }
+            } catch (e) {
+                // Safe non-breaking fallbacks if DOM isn't ready
+                console.error("Early entrypoint hook failed: " + e.message);
             }
-        });
+        }
+
+        // Cache
         document.addEventListener('DOMContentLoaded', () => {
-            loadSettings();
+            if (typeof loadSettings === 'function') {
+                loadSettings();
+            }
             // check for applicationCache
             if (window.applicationCache) {
                 window.applicationCache.addEventListener("progress", DLProgress, false);
@@ -594,7 +618,7 @@
             }
         });
     </script>
-    <!-- Main JS files -->
+    <!-- Choose index.js or index-legacy.js for older browsers, generated with Babel -->
     <script id="main-logic-loader">
         (function () {
             var isModern = 'noModule' in document.createElement('script');
@@ -603,6 +627,16 @@
         })();
     </script>
     <script src="./includes/payloads/payloads.js"></script>
+    <script src="./includes/js/payloadsList.js"></script>
+    <script src="./includes/js/design.js"></script>
+    <script src="./includes/js/language.js"></script>
+    <script src="./includes/js/HENs.js"></script>
+    <script src="./includes/js/checkFw.js"></script>
+    <script src="./includes/js/autoJbRetry.js"></script>
+    <script src="./includes/js/cache.js"></script>
+    <script src="./includes/js/events.js"></script>
+    <script src="./includes/js/payloadsHandler.js"></script>
+    <script src="./includes/js/utilities.js"></script>
 </body>
 
 </html>
